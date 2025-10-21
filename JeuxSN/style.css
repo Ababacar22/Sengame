@@ -1,0 +1,83 @@
+/* Style de base */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Conteneur principal */
+.quiz-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+}
+
+#question-text {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Grille pour les boutons */
+.btn-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Une colonne sur mobile */
+    gap: 10px;
+}
+
+/* Style général des boutons */
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Feedback visuel pour les réponses */
+.btn.correct {
+    background-color: #28a745; /* Vert */
+    color: white;
+}
+
+.btn.incorrect {
+    background-color: #dc3545; /* Rouge */
+    color: white;
+}
+
+/* Désactiver les clics après la réponse */
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Conteneur des résultats */
+.results-container {
+    text-align: center;
+}
+
+/* Classe utilitaire pour cacher/montrer des éléments */
+.hide {
+    display: none;
+}
+
+/* Responsive : 2 colonnes sur écrans larges */
+@media (min-width: 576px) {
+    .btn-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
