@@ -1,11 +1,9 @@
 // src/components/SeriesScreen.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // <<< Importer useState, useEffect
 import styled from 'styled-components';
-import { motion } from 'framer-motion'; // <<< 1. Importer motion
+import { motion } from 'framer-motion';
 
 // --- STYLED COMPONENTS ---
-
-// <<< 2. Conteneur racine devient motion.div
 const SeriesContainer = styled(motion.div)`
   text-align: center;
 `;
@@ -41,6 +39,8 @@ const SeriesButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   line-height: 1.4;
+  position: relative; /* Pour positionner le score */
+  overflow: hidden; /* Pour s'assurer que rien ne dépasse */
 
   span {
     font-size: 0.85rem;
@@ -53,6 +53,20 @@ const SeriesButton = styled.button`
     transform: scale(1.05);
     background-color: #007336;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* <<< Style pour le meilleur score */
+  .high-score {
+    position: absolute; /* Positionnement absolu */
+    top: 5px; /* Petit décalage du haut */
+    right: 8px; /* Petit décalage de la droite */
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 3px;
+    background-color: ${props => props.theme.colors.yellow};
+    color: ${props => props.theme.colors.dark}; /* Texte foncé sur fond jaune */
+    opacity: 0.9;
   }
 `;
 
@@ -71,7 +85,6 @@ const BackButton = styled.button`
 `;
 // --- FIN STYLED COMPONENTS ---
 
-// <<< 3. Définition des variantes d'animation (Exemple: fondu + léger zoom)
 const screenVariants = {
   hidden: { opacity: 0, scale: 0.98 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
@@ -79,10 +92,31 @@ const screenVariants = {
 };
 
 // --- COMPOSANT ---
+// <<< Accepter 'categoryKey'
+function SeriesScreen({ category, categoryKey, startGame, goToStart }) {
+  // <<< État pour stocker les meilleurs scores lus
+  const [highScores, setHighScores] = useState({});
 
-function SeriesScreen({ category, startGame, goToStart }) {
+  // <<< Lire les scores au chargement
+  useEffect(() => {
+    const scores = {};
+    if (category && category.series && categoryKey) { // Ajout vérification categoryKey
+      category.series.forEach((_series, index) => { // _series non utilisé mais nécessaire pour l'index
+        const scoreKey = `highScore-${categoryKey}-${index}`;
+        try {
+          const storedScore = localStorage.getItem(scoreKey);
+          if (storedScore !== null) {
+            scores[index] = parseInt(storedScore, 10);
+          }
+        } catch (error) {
+          console.error("Erreur lecture localStorage:", error);
+        }
+      });
+    }
+    setHighScores(scores);
+  }, [category, categoryKey]); // Se relance si la catégorie change
+
   return (
-    // <<< 4. Application des props d'animation
     <SeriesContainer
       variants={screenVariants}
       initial="hidden"
@@ -93,15 +127,22 @@ function SeriesScreen({ category, startGame, goToStart }) {
       <Subtitle>Choisissez une série pour commencer :</Subtitle>
 
       <SeriesGrid>
-        {category.series.map((series, index) => (
-          <SeriesButton
-            key={index}
-            onClick={() => startGame(index)}
-          >
-            Série {index + 1}
-            <span>({series.length} questions)</span>
-          </SeriesButton>
-        ))}
+        {category.series.map((series, index) => {
+          const highScore = highScores[index];
+          return (
+            <SeriesButton
+              key={index}
+              onClick={() => startGame(index)}
+            >
+              Série {index + 1}
+              <span>({series.length} questions)</span>
+              {/* <<< Affichage conditionnel du meilleur score */}
+              {highScore !== undefined && (
+                <span className="high-score">🏆 {highScore}/{series.length}</span>
+              )}
+            </SeriesButton>
+          );
+        })}
       </SeriesGrid>
 
       <BackButton onClick={goToStart}>

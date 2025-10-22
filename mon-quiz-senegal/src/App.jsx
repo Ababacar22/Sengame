@@ -8,9 +8,22 @@ import ResultsScreen from './components/ResultsScreen';
 import { quizzes } from './data/questions';
 import ReactGA from 'react-ga4';
 import logoGainde from './assets/logo_bleu.png'; // Vérifiez le chemin
-import { AnimatePresence } from 'framer-motion'; // <<< 1. Importer AnimatePresence
+import { AnimatePresence } from 'framer-motion';
 
-// --- STYLED COMPONENTS ---
+// >>> Fonction pour mélanger un tableau (Fisher-Yates)
+function shuffleArray(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+// <<< FIN FONCTION SHUFFLE
+
+// --- STYLED COMPONENTS (INCHANGÉS) ---
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -25,19 +38,16 @@ const LogoImage = styled.img`
   display: block;
 `;
 
-// <<< 2. Modifier QuizCard: retirer padding, ajouter overflow et position
 const QuizCard = styled.div`
   background-color: white;
   width: 100%;
   max-width: 600px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  /* padding: 2rem; Supprimé */
-  overflow: hidden; /* Important pour contenir l'image arrondie et les animations */
-  position: relative; /* Aide à contenir les éléments animés */
+  overflow: hidden;
+  position: relative;
 `;
 
-// <<< 3. Ajouter ContentWrapper pour le padding (utilisé pour Series, Quiz, Results)
 const ContentWrapper = styled.div`
   padding: 2rem;
 `;
@@ -66,27 +76,39 @@ function App() {
   const [score, setScore] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState([]);
   const [selectedCategoryKey, setSelectedCategoryKey] = useState(null);
+  const [selectedSeriesIndex, setSelectedSeriesIndex] = useState(null);
 
-  // Fonctions de navigation (inchangées)
+  // Étape 1: L'utilisateur choisit une catégorie
   const selectCategory = (categoryKey) => {
     setSelectedCategoryKey(categoryKey);
     setGameState('selecting_series');
   };
-  
+
+  // Étape 2: L'utilisateur choisit une série
   const startGame = (seriesIndex) => {
-    const questionsForSeries = quizzes[selectedCategoryKey].series[seriesIndex];
-    setCurrentQuiz(questionsForSeries);
+    setSelectedSeriesIndex(seriesIndex);
+
+    // Récupère les questions originales de la série
+    const originalQuestionsForSeries = quizzes[selectedCategoryKey].series[seriesIndex];
+
+    // >>> Mélange une COPIE du tableau avant de le stocker
+    const shuffledQuestions = shuffleArray([...originalQuestionsForSeries]);
+
+    setCurrentQuiz(shuffledQuestions); // Utilise les questions mélangées
     setScore(0);
     setGameState('playing');
-    
+
     ReactGA.event({
       category: "Quiz",
       action: "Start_Quiz",
       label: `${quizzes[selectedCategoryKey].title} - Série ${seriesIndex + 1}`
     });
   };
-  
+
+  // Étape 3: Le quiz est fini
   const showResults = () => setGameState('results');
+
+  // Étape 4: Navigation (retour)
   const goToSeriesScreen = () => setGameState('selecting_series');
   const goToStart = () => setGameState('start');
 
@@ -94,45 +116,43 @@ function App() {
   const renderGame = () => {
     switch (gameState) {
       case 'start':
-        // <<< 4. Ajouter la key unique
-        return <StartScreen key="start" selectCategory={selectCategory} />; 
-      
+        return <StartScreen key="start" selectCategory={selectCategory} />;
+
       case 'selecting_series':
         return (
-          // <<< 4. Ajouter la key unique
-          <SeriesScreen 
-            key="series" 
+          <SeriesScreen
+            key="series"
             category={quizzes[selectedCategoryKey]}
+            categoryKey={selectedCategoryKey}
             startGame={startGame}
             goToStart={goToStart}
           />
         );
-        
+
       case 'playing':
         return (
-          // <<< 4. Ajouter la key unique
-          <Quiz 
-            key="quiz" 
-            questions={currentQuiz} 
-            setScore={setScore} 
-            showResults={showResults} 
-            goToSeriesScreen={goToSeriesScreen} 
+          <Quiz
+            key="quiz"
+            questions={currentQuiz} // Passe le tableau déjà mélangé
+            setScore={setScore}
+            showResults={showResults}
+            goToSeriesScreen={goToSeriesScreen}
           />
         );
-        
+
       case 'results':
         return (
-          // <<< 4. Ajouter la key unique
-          <ResultsScreen 
-            key="results" 
-            score={score} 
-            total={currentQuiz.length} 
-            restartGame={goToSeriesScreen} 
+          <ResultsScreen
+            key="results"
+            score={score}
+            total={currentQuiz.length}
+            restartGame={goToSeriesScreen}
+            categoryKey={selectedCategoryKey}
+            seriesIndex={selectedSeriesIndex}
           />
         );
-        
+
       default:
-         // <<< 4. Ajouter la key unique
         return <StartScreen key="start_default" selectCategory={selectCategory} />;
     }
   }
@@ -141,14 +161,12 @@ function App() {
     <AppContainer>
       <LogoImage src={logoGainde} alt="Logo Gainde IT" />
       <QuizCard>
-          {/* <<< 5. Envelopper dans AnimatePresence */}
           <AnimatePresence mode="wait">
-            {/* Logique conditionnelle pour le padding (StartScreen le gère lui-même) */}
              {gameState === 'start' ? (
-               renderGame() 
+               renderGame()
              ) : (
-              <ContentWrapper key={gameState}> {/* Ajout d'une key ici aussi */}
-                {renderGame()} 
+              <ContentWrapper key={gameState}>
+                {renderGame()}
               </ContentWrapper>
              )}
           </AnimatePresence>

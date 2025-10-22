@@ -1,10 +1,23 @@
 // src/components/Quiz.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // <<< Importer useEffect
 import styled from 'styled-components';
 import AnswerList from './AnswerList';
 import Timer from './Timer';
 import ReactGA from 'react-ga4';
-import { motion } from 'framer-motion'; // <<< 1. Importer motion
+import { motion } from 'framer-motion';
+
+// >>> Copier la fonction shuffleArray ici aussi
+function shuffleArray(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+// <<< FIN COPIE
 
 // --- STYLED COMPONENTS (INCHANGÉS) ---
 const QuestionText = styled.h2`
@@ -54,7 +67,6 @@ const QuitButton = styled.button`
 `;
 // --- FIN STYLED COMPONENTS ---
 
-// <<< 2. Définition des variantes d'animation (Exemple: arrivée par le bas)
 const screenVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
@@ -65,17 +77,33 @@ const screenVariants = {
 function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  // >>> État pour les options mélangées
+  const [shuffledOptions, setShuffledOptions] = useState([]);
 
-  const currentQuestion = questions[currentIndex];
+  // Vérifie si 'questions' existe et a une entrée à 'currentIndex'
+  const currentQuestion = questions && questions[currentIndex] ? questions[currentIndex] : null;
 
-  // Fonctions handleTimeUp et handleAnswerSelect (inchangées)
+  // >>> useEffect pour mélanger les options quand la question change
+  useEffect(() => {
+    // S'assure que currentQuestion et ses options existent
+    if (currentQuestion && currentQuestion.options) {
+      // Mélange une COPIE des options
+      setShuffledOptions(shuffleArray([...currentQuestion.options]));
+    } else {
+      setShuffledOptions([]); // Vide les options s'il n'y a pas de question valide
+    }
+  }, [currentQuestion]); // Dépendance: se relance si currentQuestion change
+  // <<< FIN useEffect
+
+  // Fonctions handleTimeUp et handleAnswerSelect (inchangées pour la logique de score/GA)
   const handleTimeUp = () => {
+     if (!currentQuestion) return; // Sécurité
     ReactGA.event({ /* ... */ });
     handleAnswerSelect({ text: 'TIME_UP', correct: false });
   };
 
   const handleAnswerSelect = (option) => {
-    if (selectedAnswer) return;
+    if (selectedAnswer || !currentQuestion) return; // Sécurité
     setSelectedAnswer(option);
 
     if (option.correct) {
@@ -96,29 +124,36 @@ function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
     }, 3000); // Délai de 3 secondes
   };
 
+  // Sécurité: Affiche un message si pas de question (ne devrait pas arriver normalement)
+  if (!currentQuestion) {
+    return <motion.div>Chargement de la question...</motion.div>;
+  }
+
   return (
-    // <<< 3. Wrapper tout le contenu dans motion.div et appliquer les props
     <motion.div
+      // Utilise l'index comme key pour forcer l'animation à chaque question
+      key={currentIndex}
       variants={screenVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
       <Timer
-        key={currentIndex}
+        key={`timer-${currentIndex}`} // Key unique pour le timer aussi
         onTimeUp={handleTimeUp}
         stop={selectedAnswer !== null}
       />
 
       <QuestionText>{currentQuestion.question}</QuestionText>
 
+      {/* >>> Passer les options mélangées */}
       <AnswerList
-        options={currentQuestion.options}
+        options={shuffledOptions}
         onAnswerSelect={handleAnswerSelect}
         selectedAnswer={selectedAnswer}
       />
+      {/* <<< FIN MODIFICATION */}
 
-      {/* Affiche l'explication si une réponse est sélectionnée ET si l'explication existe */}
       {selectedAnswer && currentQuestion.explanation && (
         <ExplanationBox>
           <strong>Le saviez-vous ? 💡</strong>
