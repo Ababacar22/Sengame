@@ -1,6 +1,6 @@
 // src/components/ResultsScreen.jsx
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components'; // 1. Importer 'css'
 import ReactGA from 'react-ga4';
 
 // --- STYLED COMPONENTS ---
@@ -14,6 +14,26 @@ const Title = styled.h1`
   color: ${props => props.theme.colors.ochre};
   margin-bottom: 1rem;
 `;
+
+// 2. NOUVEAU : Style pour le message de feedback
+const FeedbackText = styled.p`
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+
+  /* Style conditionnel basé sur le niveau de score */
+  ${({ level, theme }) => {
+    if (level === 'good') {
+      return css`color: ${theme.colors.green};`; // Vert pour les bons scores
+    }
+    if (level === 'medium') {
+      return css`color: ${theme.colors.ochre};`; // Ocre pour les scores moyens
+    }
+    return css`color: ${theme.colors.red};`; // Rouge pour les scores bas
+  }}
+`;
+
 
 const ScoreText = styled.p`
   font-size: 1.5rem;
@@ -46,8 +66,26 @@ const RestartButton = styled.button`
 // --- FIN STYLED COMPONENTS ---
 
 
+// 3. NOUVEAU : Fonction pour obtenir le message basé sur le score
+const getFeedbackMessage = (score, total) => {
+  if (total === 0) return { message: "Quiz terminé !", level: 'medium' }; // Sécurité
+  
+  const percentage = (score / total) * 100;
+
+  if (percentage >= 80) {
+    return { message: "Excellent ! ✨ Félicitations, vous maîtrisez le sujet !", level: 'good' };
+  } else if (percentage >= 50) {
+    return { message: "Pas mal du tout ! 👍 Continuez comme ça !", level: 'medium' };
+  } else {
+    return { message: "Bon essai ! 😊 Chaque erreur est une occasion d'apprendre.", level: 'bad' };
+  }
+  // Ajoutez d'autres paliers si vous le souhaitez (ex: score parfait)
+};
+
+
 function ResultsScreen({ score, total, restartGame }) {
 
+  // Google Analytics (inchangé)
   useEffect(() => {
     ReactGA.event({
       category: "Quiz",
@@ -55,11 +93,19 @@ function ResultsScreen({ score, total, restartGame }) {
       label: `Score: ${score}/${total}`,
       value: score
     });
-  }, [score, total]); // Ajout de dépendances au cas où
+  }, [score, total]); 
+
+  // 4. Appeler la fonction pour obtenir le message et le niveau
+  const feedback = getFeedbackMessage(score, total);
 
   return (
     <ResultsContainer>
       <Title>Série Terminée !</Title>
+      
+      {/* 5. Afficher le message de feedback */}
+      <FeedbackText level={feedback.level}>
+        {feedback.message}
+      </FeedbackText>
       
       <ScoreText>
         Votre score est de :<br/>
