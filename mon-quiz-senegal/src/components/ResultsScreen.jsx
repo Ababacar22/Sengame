@@ -1,9 +1,9 @@
 // src/components/ResultsScreen.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import ReactGA from 'react-ga4';
 
-// ... (Tous vos styled-components Title, ScoreText... restent les mêmes) ...
-
+// --- STYLED COMPONENTS (INCHANGÉS) ---
 const ResultsContainer = styled.div`
   text-align: center;
 `;
@@ -43,20 +43,34 @@ const RestartButton = styled.button`
     box-shadow: 0 4px 15px rgba(0, 133, 63, 0.3);
   }
 `;
+// --- FIN STYLED COMPONENTS ---
 
 
 function ResultsScreen({ score, total, restartGame }) {
+
+  // Le hook useEffect pour Google Analytics (inchangé)
+  useEffect(() => {
+    ReactGA.event({
+      category: "Quiz",
+      action: "Finish_Quiz",
+      label: `Score: ${score}/${total}`,
+      value: score
+    });
+  }, []); // Le tableau vide est correct ici
+
   return (
     <ResultsContainer>
-      <Title>Quiz Terminé !</Title>
+      {/* MODIFIÉ : Le titre */}
+      <Title>Série Terminée !</Title>
+      
       <ScoreText>
         Votre score est de :<br/>
         <span>{score} / {total}</span>
       </ScoreText>
       
-      {/* Cette fonction 'restartGame' ramène maintenant à l'écran des catégories */}
+      {/* MODIFIÉ : Le texte du bouton */}
       <RestartButton onClick={restartGame}>
-        Choisir une autre catégorie
+        Retour aux séries
       </RestartButton>
     </ResultsContainer>
   );

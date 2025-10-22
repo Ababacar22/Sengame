@@ -2,12 +2,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { quizzes } from '../data/questions';
+import heroImage from '../assets/sengal.png'; // (Vérifiez le nom de votre image)
 
-// Assurez-vous que le chemin est correct.
-import heroImage from '../assets/sengal.png'; // (Ou le nom de l'image que vous avez choisie)
-
-// --- STYLED COMPONENTS ---
-
+// --- STYLED COMPONENTS (INCHANGÉS) ---
 const StartContainer = styled.div`
   text-align: center;
 `;
@@ -65,21 +62,20 @@ const CategoryButton = styled.button`
   }
 `;
 
-// NOUVEAU : Le composant pour votre pitch et vos crédits
 const DevCredit = styled.div`
-  margin-top: 2.5rem; /* Espace au-dessus */
-  padding-top: 1.5rem; /* Ligne de séparation */
-  border-top: 1px solid ${props => props.theme.colors.light}; /* Couleur sable/clair */
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid ${props => props.theme.colors.light};
   font-size: 0.9rem;
-  color: ${props => props.theme.colors.gray}; /* Couleur grise douce */
+  color: ${props => props.theme.colors.gray};
   line-height: 1.6;
 
   strong {
-    color: ${props => props.theme.colors.dark}; /* Nom en plus foncé */
+    color: ${props => props.theme.colors.dark};
   }
 
   a {
-    color: ${props => props.theme.colors.ochre}; /* Lien avec la couleur ocre */
+    color: ${props => props.theme.colors.ochre};
     text-decoration: none;
     font-weight: 600;
 
@@ -88,11 +84,13 @@ const DevCredit = styled.div`
     }
   }
 `;
+// --- FIN STYLED COMPONENTS ---
 
 
 // --- COMPOSANT ---
 
-function StartScreen({ startGame }) {
+// MODIFIÉ : La prop s'appelle 'selectCategory'
+function StartScreen({ selectCategory }) {
   const categories = Object.keys(quizzes);
 
   return (
@@ -107,14 +105,14 @@ function StartScreen({ startGame }) {
         {categories.map((categoryKey) => (
           <CategoryButton 
             key={categoryKey}
-            onClick={() => startGame(categoryKey)}
+            // MODIFIÉ : Appelle 'selectCategory' au lieu de 'startGame'
+            onClick={() => selectCategory(categoryKey)}
           >
             {quizzes[categoryKey].title}
           </CategoryButton>
         ))}
       </CategoryGrid>
 
-      {/* NOUVEAU : Le bloc de crédits est ajouté ici */}
       <DevCredit>
         <p>Ce jeu a été développé par <strong>Khalifa Ababacar DIALLO</strong> afin d'améliorer la culture générale tout en garantissant un divertissement.</p>
         <p>Contact pro : <a href="mailto:khalifa.a.diallo@outlook.fr">khalifa.a.diallo@outlook.fr</a></p>
