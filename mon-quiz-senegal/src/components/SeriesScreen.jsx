@@ -41,7 +41,6 @@ const SeriesButton = styled.button`
   transition: all 0.3s ease;
   line-height: 1.4;
 
-  /* Pour " (5 questions)" */
   span {
     font-size: 0.85rem;
     font-weight: 400;
@@ -79,11 +78,10 @@ function SeriesScreen({ category, startGame, goToStart }) {
       <Subtitle>Choisissez une série pour commencer :</Subtitle>
       
       <SeriesGrid>
-        {/* On "mappe" sur le tableau 'series' de la catégorie */}
         {category.series.map((series, index) => (
           <SeriesButton 
             key={index}
-            onClick={() => startGame(index)} // Envoie l'index de la série (0, 1, 2...)
+            onClick={() => startGame(index)} 
           >
             Série {index + 1}
             <span>({series.length} questions)</span>
@@ -91,7 +89,6 @@ function SeriesScreen({ category, startGame, goToStart }) {
         ))}
       </SeriesGrid>
 
-      {/* Le bouton pour revenir à l'écran des catégories */}
       <BackButton onClick={goToStart}>
         &larr; Retour aux catégories
       </BackButton>

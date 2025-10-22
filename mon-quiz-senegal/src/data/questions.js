@@ -169,8 +169,61 @@ export const quizzes = {
           ],
           explanation: "La région de Tambacounda, au sud-est, est la plus vaste du pays. Elle est si grande qu'en 2008, la région de Kédougou en a été détachée."
         }
+      ],
+      
+      // --- NOUVELLE SÉRIE 4 ---
+      [
+        {
+          question: "Quelle est la seule région qui est aussi un seul département ?",
+          options: [
+            { text: "Dakar", correct: true },
+            { text: "Thiès", correct: false },
+            { text: "Kaolack", correct: false },
+            { text: "Ziguinchor", correct: false }
+          ],
+          explanation: "La région de Dakar est unique car elle ne compte qu'un seul département (le département de Dakar), alors que toutes les autres en ont plusieurs."
+        },
+        {
+          question: "Le gisement de gaz 'Grand Tortue/Ahmeyim' est partagé entre le Sénégal et quel autre pays ?",
+          options: [
+            { text: "La Gambie", correct: false },
+            { text: "La Mauritanie", correct: true },
+            { text: "La Guinée-Bissau", correct: false },
+            { text: "Le Mali", correct: false }
+          ],
+          explanation: "Ce gisement offshore majeur est situé sur la frontière maritime entre le Sénégal et la Mauritanie, et est développé conjointement par les two pays."
+        },
+        {
+          question: "La 'Haute-Casamance' correspond administrativement principalement à quelle région ?",
+          options: [
+            { text: "Région de Ziguinchor", correct: false },
+            { text: "Région de Sédhiou", correct: false },
+            { text: "Région de Kolda", correct: true },
+            { text: "Région de Kédougou", correct: false }
+          ],
+          explanation: "La Casamance est souvent divisée géographiquement en Basse-Casamance (Ziguinchor) et Haute-Casamance (Kolda et Sédhiou)."
+        },
+        {
+          question: "Où se situe la 'Zone des Niayes', importante pour le maraîchage ?",
+          options: [
+            { text: "En Casamance", correct: false },
+            { text: "Le long de la côte de Dakar à Saint-Louis", correct: true },
+            { text: "Dans la vallée du fleuve Sénégal", correct: false },
+            { text: "Autour de Tambacounda", correct: false }
+          ],
+          explanation: "Les Niayes sont une zone de dépressions fertiles (anciens lits de lacs) qui longent la côte nord, idéale pour la culture de légumes (maraîchage)."
+        },
+        {
+          question: "Quelle ville est célèbre pour son 'Pélerinage Marial' annuel ?",
+          options: [
+            { text: "Popenguine", correct: true },
+            { text: "Fadiouth", correct: false },
+            { text: "Gorée", correct: false },
+            { text: "Dakar", correct: false }
+          ],
+          explanation: "Chaque année, des milliers de pèlerins chrétiens (mais aussi musulmans) convergent vers le sanctuaire marial de Popenguine pour le pèlerinage."
+        }
       ]
-      // Ajoutez une virgule ici et une nouvelle série [ ... ]
     ]
   },
 
@@ -292,7 +345,7 @@ export const quizzes = {
       // --- SÉRIE 3 ---
       [
         {
-          question: "Comment s'appelle le cinéaste souvent considéré comme le 'père du cinéma africain' ?",
+          question: "Comment s'appelle le cinéaste often considéré comme le 'père du cinéma africain' ?",
           options: [
             { text: "Ousmane Sembène", correct: true },
             { text: "Djibril Diop Mambéty", correct: false },
@@ -341,8 +394,61 @@ export const quizzes = {
           ],
           explanation: "Suite à sa victoire à la CAN et à une saison exceptionnelle avec Liverpool, Sadio Mané a été classé deuxième au Ballon d'Or 2022, le plus haut classement pour un Africain depuis George Weah."
         }
+      ],
+      
+      // --- NOUVELLE SÉRIE 4 ---
+      [
+        {
+          question: "Comment s'appelle l'art de la peinture sous verre, très populaire au Sénégal ?",
+          options: [
+            { text: "Le Fixé sous verre", correct: true },
+            { text: "Le Bogolan", correct: false },
+            { text: "Le Batik", correct: false },
+            { text: "La Fresque", correct: false }
+          ],
+          explanation: "Le 'Fixé sous verre' est une technique de peinture inversée sur verre, très prisée pour les portraits et les scènes religieuses ou quotidiennes."
+        },
+        {
+          question: "Quel romancier a écrit 'L'Aventure ambiguë' ?",
+          options: [
+            { text: "Cheikh Hamidou Kane", correct: true },
+            { text: "Ousmane Sembène", correct: false },
+            { text: "Boubacar Boris Diop", correct: false },
+            { text: "Mohamed Mbougar Sarr", correct: false }
+          ],
+          explanation: "Publié en 1961, 'L'Aventure ambiguë' est un roman philosophique majeur sur le dilemme d'un jeune homme partagé entre la spiritualité (Islam) et le modernisme occidental."
+        },
+        {
+          question: "Le 'Simb', ou 'Jeu du Faux Lion', est une performance culturelle de quel groupe ethnique ?",
+          options: [
+            { text: "Les Lébous", correct: true },
+            { text: "Les Peuls", correct: false },
+            { text: "Les Diolas", correct: false },
+            { text: "Les Bassaris", correct: false }
+          ],
+          explanation: "À l'origine un rituel d'initiation lébou, le 'Simb' est devenu un spectacle de rue populaire où des 'faux lions' dansent et interagissent avec la foule."
+        },
+        {
+          question: "Quel groupe musical, fondé par les frères Touré, a popularisé la musique sénégalaise en France dans les années 80 ?",
+          options: [
+            { text: "Xalam", correct: false },
+            { text: "Touré Kunda", correct: true },
+            { text: "Orchestra Baobab", correct: false },
+            { text: "Super Diamono", correct: false }
+          ],
+          explanation: "Touré Kunda, signifiant 'famille éléphant', a été pionnier de la 'World Music' en mélangeant les rythmes africains avec le jazz, le funk et le reggae."
+        },
+        {
+          question: "Quel est le nom du café épicé (poivre de Selim) associé à la confrérie Mouride ?",
+          options: [
+            { text: "Café Touba", correct: true },
+            { text: "Café Nioro", correct: false },
+            { text: "Café Crème", correct: false },
+            { text: "Café Mandingue", correct: false }
+          ],
+          explanation: "Le Café Touba, nommé d'après la ville sainte, est un café aromatisé avec du 'djar' (poivre de Selim et clou de girofle), réputé pour ses vertus médicinales."
+        }
       ]
-      // Ajoutez une virgule ici et une nouvelle série [ ... ]
     ]
   },
 
@@ -457,7 +563,7 @@ export const quizzes = {
             { text: "Les Signares", correct: true },
             { text: "Les Comtesses", correct: false }
           ],
-          explanation: "Les Signares (du portugais 'senhora') étaient des femmes métisses influentes aux 18e et 19e siècles, actives dans le commerce (notamment de la gomme et des esclaves) et la vie sociale."
+          explanation: "Les Signares (du portugais 'senhora') étaient des femmes métisses influentes aux 18e et 19e siècles, actives dans le commerce et la vie sociale."
         }
       ],
 
@@ -513,8 +619,61 @@ export const quizzes = {
           ],
           explanation: "Bassirou Diomaye Faye a été élu le 24 mars 2024, marquant la troisième alternance politique pacifique du pays."
         }
+      ],
+      
+      // --- NOUVELLE SÉRIE 4 ---
+      [
+        {
+          question: "Quel était le titre du souverain du royaume du Baol ?",
+          options: [
+            { text: "Teigne", correct: true },
+            { text: "Damel", correct: false },
+            { text: "Bour Sine", correct: false },
+            { text: "Brak", correct: false }
+          ],
+          explanation: "Le souverain du Baol portait le titre de 'Teigne'. Le 'Damel' régnait sur le Cayor, le 'Bour' sur le Sine et le Saloum, et le 'Brak' sur le Walo."
+        },
+        {
+          question: "Quel royaume pré-colonial était situé dans le delta du Saloum et avait pour capitale Kahone ?",
+          options: [
+            { text: "Le Royaume du Sine", correct: false },
+            { text: "Le Royaume du Saloum", correct: true },
+            { text: "Le Royaume du Baol", correct: false },
+            { text: "Le Royaume du Cayor", correct: false }
+          ],
+          explanation: "Le Royaume du Saloum, un puissant royaume Sérère, avait sa capitale à Kahone, près de l'actuelle Kaolack."
+        },
+        {
+          question: "Quelle ethnie est historiquement associée aux royaumes du Sine et du Saloum ?",
+          options: [
+            { text: "Les Wolofs", correct: false },
+            { text: "Les Peuls", correct: false },
+            { text: "Les Sérères", correct: true },
+            { text: "Les Diolas", correct: false }
+          ],
+          explanation: "Les royaumes du Sine et du Saloum étaient des États Sérères majeurs, dirigés par une aristocratie 'Guelwar' d'origine mandingue."
+        },
+        {
+          question: "En 1982, le Sénégal a formé une confédération avec quel pays, dissoute en 1989 ?",
+          options: [
+            { text: "La Guinée", correct: false },
+            { text: "Le Mali", correct: false },
+            { text: "La Gambie (Sénégambie)", correct: true },
+            { text: "La Mauritanie", correct: false }
+          ],
+          explanation: "La Confédération de Sénégambie a été créée pour promouvoir la coopération, mais a été dissoute en 1989 en raison de différends sur l'intégration."
+        },
+        {
+          question: "Qui fut le principal opposant historique à Léopold Sédar Senghor ?",
+          options: [
+            { text: "Mamadou Dia", correct: true },
+            { text: "Lamine Guèye", correct: false },
+            { text: "Blaise Diagne", correct: false },
+            { text: "Abdoulaye Wade", correct: false }
+          ],
+          explanation: "Mamadou Dia fut le Président du Conseil (Premier Ministre) de Senghor avant la crise de 1962 qui a conduit à son arrestation et à un régime présidentiel fort."
+        }
       ]
-      // Ajoutez une virgule ici et une nouvelle série [ ... ]
     ]
   }
 };

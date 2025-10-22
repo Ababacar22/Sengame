@@ -2,9 +2,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { quizzes } from '../data/questions';
-import heroImage from '../assets/sengal.png'; // (Vérifiez le nom de votre image)
+import heroImage from '../assets/sengal.png'; // Vérifiez que ce fichier est dans src/assets/
 
-// --- STYLED COMPONENTS (INCHANGÉS) ---
+// --- STYLED COMPONENTS ---
 const StartContainer = styled.div`
   text-align: center;
 `;
@@ -87,10 +87,7 @@ const DevCredit = styled.div`
 // --- FIN STYLED COMPONENTS ---
 
 
-// --- COMPOSANT ---
-
-// MODIFIÉ : La prop s'appelle 'selectCategory'
-function StartScreen({ selectCategory }) {
+function StartScreen({ selectCategory }) { // Prop modifiée
   const categories = Object.keys(quizzes);
 
   return (
@@ -105,8 +102,7 @@ function StartScreen({ selectCategory }) {
         {categories.map((categoryKey) => (
           <CategoryButton 
             key={categoryKey}
-            // MODIFIÉ : Appelle 'selectCategory' au lieu de 'startGame'
-            onClick={() => selectCategory(categoryKey)}
+            onClick={() => selectCategory(categoryKey)} // Fonction modifiée
           >
             {quizzes[categoryKey].title}
           </CategoryButton>

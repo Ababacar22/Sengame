@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import ReactGA from 'react-ga4';
 
-// --- STYLED COMPONENTS (INCHANGÉS) ---
+// --- STYLED COMPONENTS ---
 const ResultsContainer = styled.div`
   text-align: center;
 `;
@@ -48,7 +48,6 @@ const RestartButton = styled.button`
 
 function ResultsScreen({ score, total, restartGame }) {
 
-  // Le hook useEffect pour Google Analytics (inchangé)
   useEffect(() => {
     ReactGA.event({
       category: "Quiz",
@@ -56,11 +55,10 @@ function ResultsScreen({ score, total, restartGame }) {
       label: `Score: ${score}/${total}`,
       value: score
     });
-  }, []); // Le tableau vide est correct ici
+  }, [score, total]); // Ajout de dépendances au cas où
 
   return (
     <ResultsContainer>
-      {/* MODIFIÉ : Le titre */}
       <Title>Série Terminée !</Title>
       
       <ScoreText>
@@ -68,7 +66,6 @@ function ResultsScreen({ score, total, restartGame }) {
         <span>{score} / {total}</span>
       </ScoreText>
       
-      {/* MODIFIÉ : Le texte du bouton */}
       <RestartButton onClick={restartGame}>
         Retour aux séries
       </RestartButton>

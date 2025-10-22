@@ -2,14 +2,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import StartScreen from './components/StartScreen';
-import SeriesScreen from './components/SeriesScreen'; // 1. Importer le nouvel écran
+import SeriesScreen from './components/SeriesScreen';
 import Quiz from './components/Quiz';
 import ResultsScreen from './components/ResultsScreen';
-import { quizzes } from './data/questions'; // Notre BDD
+import { quizzes } from './data/questions';
 import ReactGA from 'react-ga4';
-import logoGainde from './assets/logo_bleu.png'; // Votre logo
+import logoGainde from './assets/logo_bleu.png'; // Vérifiez que ce fichier est dans src/assets/
 
-// --- STYLED COMPONENTS (INCHANGÉS) ---
+// --- STYLED COMPONENTS ---
 const AppContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -53,30 +53,25 @@ const FooterContainer = styled.footer`
 
 
 function App() {
-  // 2. MODIFIER L'ÉTAT DU JEU
   const [gameState, setGameState] = useState('start'); // 'start', 'selecting_series', 'playing', 'results'
   const [score, setScore] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState([]);
-  
-  // 3. NOUVEL ÉTAT : Mémoriser la catégorie choisie
   const [selectedCategoryKey, setSelectedCategoryKey] = useState(null);
 
-  // 4. MODIFIER : Cette fonction s'appelle 'selectCategory'
+  // Étape 1: L'utilisateur choisit une catégorie
   const selectCategory = (categoryKey) => {
-    setSelectedCategoryKey(categoryKey); // Mémorise la catégorie (ex: 'geographie')
-    setGameState('selecting_series'); // Passe à l'écran des séries
+    setSelectedCategoryKey(categoryKey);
+    setGameState('selecting_series');
   };
   
-  // 5. NOUVEAU : La fonction 'startGame' prend l'index de la série
+  // Étape 2: L'utilisateur choisit une série
   const startGame = (seriesIndex) => {
-    // Récupère les questions de la série (tableau)
     const questionsForSeries = quizzes[selectedCategoryKey].series[seriesIndex];
     
     setCurrentQuiz(questionsForSeries);
     setScore(0);
     setGameState('playing');
     
-    // Suivi Google Analytics (on ajoute la série)
     ReactGA.event({
       category: "Quiz",
       action: "Start_Quiz",
@@ -84,25 +79,25 @@ function App() {
     });
   };
   
+  // Étape 3: Le quiz est fini
   const showResults = () => setGameState('results');
   
-  // 6. NOUVEAU : Fonctions de navigation
-  const goToSeriesScreen = () => setGameState('selecting_series'); // Pour le bouton "Rejouer"
-  const goToStart = () => setGameState('start'); // Pour le bouton "Retour"
+  // Étape 4: Navigation (retour)
+  const goToSeriesScreen = () => setGameState('selecting_series');
+  const goToStart = () => setGameState('start');
 
-  // 7. MODIFIER : Le 'renderGame' gère le nouvel état 'selecting_series'
+  // Gère l'affichage des écrans
   const renderGame = () => {
     switch (gameState) {
       case 'start':
         return <StartScreen selectCategory={selectCategory} />; 
       
       case 'selecting_series':
-        // Affiche le nouvel écran
         return (
           <SeriesScreen 
-            category={quizzes[selectedCategoryKey]} // Passe les infos de la catégorie
-            startGame={startGame} // Passe la fonction pour démarrer le jeu
-            goToStart={goToStart} // Passe la fonction de retour
+            category={quizzes[selectedCategoryKey]}
+            startGame={startGame}
+            goToStart={goToStart}
           />
         );
         
@@ -112,6 +107,7 @@ function App() {
             questions={currentQuiz} 
             setScore={setScore} 
             showResults={showResults} 
+            goToSeriesScreen={goToSeriesScreen} // Pour le bouton "Quitter"
           />
         );
         
@@ -137,7 +133,7 @@ function App() {
       </QuizCard>
       <FooterContainer>
         <p>
-          &copy; {new Date().getFullYear()} <a href="https://gainde-it.netlify.app" target="_blank" rel="noopener noreferrer">Gainde IT</a>.
+          &copy; {new Date().getFullYear()} <a href="https://gainde-it.com" target="_blank" rel="noopener noreferrer">Gainde IT</a>.
           <br/>
           Un projet didactique 🚀 pour la promotion du savoir et de la culture sénégalaise et africaine.
         </p>
