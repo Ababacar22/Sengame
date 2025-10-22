@@ -2,28 +2,33 @@
 import React from 'react';
 import styled from 'styled-components';
 import { quizzes } from '../data/questions';
-import heroImage from '../assets/rose.jpg'; // Vérifiez que ce fichier est dans src/assets/
+import heroImage from '../assets/rose.jpg'; // Vérifiez le chemin
+import { motion } from 'framer-motion'; // <<< 1. Importer motion
 
 // --- STYLED COMPONENTS ---
-const StartContainer = styled.div`
+
+// <<< 2. Conteneur racine devient motion.div
+const StartContainer = styled(motion.div)`
   text-align: center;
+  /* Pas besoin de padding ici, il sera dans StartContentWrapper */
 `;
 
-// Dans src/components/StartScreen.jsx
-
-
+// <<< 3. HeroImage: Retirer marges négatives et border-radius inutile
 const HeroImage = styled.img`
   width: 100%;
-  height: 300px;
+  height: 180px; /* J'ai remis 180px, ajustez si besoin */
   object-fit: cover;
-  
-  /* MODIFICATION ICI : Mettez 12px pour correspondre au QuizCard */
-  border-radius: 12px 12px 0 0; 
-  
-  margin: -2rem -2rem 0 -2rem; /* Correct car padding est 2rem */
-  margin-bottom: 2rem;
-  margin-top: 0.5rem ;
+  display: block; /* Évite espace blanc sous l'image */
+  /* border-radius: 12px 12px 0 0; Supprimé car géré par QuizCard */
+  /* margin: ... Supprimé */
+  margin-bottom: 2rem; /* Juste l'espace avant le titre */
 `;
+
+// <<< 4. Nouveau : Wrapper pour le contenu SOUS l'image (avec padding)
+const StartContentWrapper = styled.div`
+  padding: 0 2rem 2rem 2rem; /* Padding G/D/Bas, mais pas Haut */
+`;
+
 
 const Title = styled.h1`
   font-family: ${props => props.theme.fonts.display};
@@ -55,7 +60,7 @@ const CategoryButton = styled.button`
   color: white;
   font-family: ${props => props.theme.fonts.sans};
   font-weight: 700;
-  font-size: 1.1rem; 
+  font-size: 1.1rem;
   padding: 1.25rem 1rem;
   border: none;
   border-radius: 8px;
@@ -93,33 +98,48 @@ const DevCredit = styled.div`
 `;
 // --- FIN STYLED COMPONENTS ---
 
+// <<< 5. Définition des variantes d'animation (Exemple simple : fondu)
+const screenVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.5 } },
+  exit: { opacity: 0, transition: { duration: 0.3 } }
+};
 
-function StartScreen({ selectCategory }) { // Prop modifiée
+// --- COMPOSANT ---
+function StartScreen({ selectCategory }) {
   const categories = Object.keys(quizzes);
 
   return (
-    <StartContainer>
-      
+    // <<< 6. Application des props d'animation
+    <StartContainer
+      variants={screenVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <HeroImage src={heroImage} alt="Illustration Quiz Sénégal" />
 
-      <Title>Quizz: Teranga Vision</Title>
-      <Subtitle>Choisissez une catégorie pour tester vos connaissances !</Subtitle>
-      
-      <CategoryGrid>
-        {categories.map((categoryKey) => (
-          <CategoryButton 
-            key={categoryKey}
-            onClick={() => selectCategory(categoryKey)} // Fonction modifiée
-          >
-            {quizzes[categoryKey].title}
-          </CategoryButton>
-        ))}
-      </CategoryGrid>
+      {/* Le reste du contenu va dans le wrapper paddé */}
+      <StartContentWrapper>
+        <Title>Quizz: Teranga Vision</Title>
+        <Subtitle>Choisissez une catégorie pour tester vos connaissances !</Subtitle>
 
-      <DevCredit>
-        <p>Ce jeu a été développé par <strong>Khalifa Ababacar DIALLO</strong> afin d'améliorer la culture générale tout en garantissant un divertissement.</p>
-        <p>Contact pro : <a href="mailto:khalifa.a.diallo@outlook.fr">khalifa.a.diallo@outlook.fr</a></p>
-      </DevCredit>
+        <CategoryGrid>
+          {categories.map((categoryKey) => (
+            <CategoryButton
+              key={categoryKey}
+              onClick={() => selectCategory(categoryKey)}
+            >
+              {quizzes[categoryKey].title}
+            </CategoryButton>
+          ))}
+        </CategoryGrid>
+
+        <DevCredit>
+          <p>Ce jeu a été développé par <strong>Khalifa Ababacar DIALLO</strong> afin d'améliorer la culture générale tout en garantissant un divertissement.</p>
+          <p>Contact pro : <a href="mailto:khalifa.a.diallo@outlook.fr">khalifa.a.diallo@outlook.fr</a></p>
+        </DevCredit>
+      </StartContentWrapper>
 
     </StartContainer>
   );

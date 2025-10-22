@@ -1,10 +1,12 @@
 // src/components/SeriesScreen.jsx
 import React from 'react';
 import styled from 'styled-components';
+import { motion } from 'framer-motion'; // <<< 1. Importer motion
 
 // --- STYLED COMPONENTS ---
 
-const SeriesContainer = styled.div`
+// <<< 2. Conteneur racine devient motion.div
+const SeriesContainer = styled(motion.div)`
   text-align: center;
 `;
 
@@ -23,7 +25,6 @@ const Subtitle = styled.p`
 
 const SeriesGrid = styled.div`
   display: grid;
-  /* Crée des colonnes automatiques de 120px minimum */
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 1rem;
 `;
@@ -62,26 +63,40 @@ const BackButton = styled.button`
   font-size: 0.9rem;
   margin-top: 2rem;
   cursor: pointer;
-  
+
   &:hover {
     color: ${props => props.theme.colors.ochre};
     text-decoration: underline;
   }
 `;
+// --- FIN STYLED COMPONENTS ---
+
+// <<< 3. Définition des variantes d'animation (Exemple: fondu + léger zoom)
+const screenVariants = {
+  hidden: { opacity: 0, scale: 0.98 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
+  exit: { opacity: 0, scale: 0.98, transition: { duration: 0.2, ease: "easeIn" } }
+};
 
 // --- COMPOSANT ---
 
 function SeriesScreen({ category, startGame, goToStart }) {
   return (
-    <SeriesContainer>
+    // <<< 4. Application des props d'animation
+    <SeriesContainer
+      variants={screenVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <CategoryTitle>{category.title}</CategoryTitle>
       <Subtitle>Choisissez une série pour commencer :</Subtitle>
-      
+
       <SeriesGrid>
         {category.series.map((series, index) => (
-          <SeriesButton 
+          <SeriesButton
             key={index}
-            onClick={() => startGame(index)} 
+            onClick={() => startGame(index)}
           >
             Série {index + 1}
             <span>({series.length} questions)</span>

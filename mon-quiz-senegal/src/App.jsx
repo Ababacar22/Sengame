@@ -7,7 +7,8 @@ import Quiz from './components/Quiz';
 import ResultsScreen from './components/ResultsScreen';
 import { quizzes } from './data/questions';
 import ReactGA from 'react-ga4';
-import logoGainde from './assets/logo_bleu.png'; // Vérifiez que ce fichier est dans src/assets/
+import logoGainde from './assets/logo_bleu.png'; // Vérifiez le chemin
+import { AnimatePresence } from 'framer-motion'; // <<< 1. Importer AnimatePresence
 
 // --- STYLED COMPONENTS ---
 const AppContainer = styled.div`
@@ -24,12 +25,20 @@ const LogoImage = styled.img`
   display: block;
 `;
 
+// <<< 2. Modifier QuizCard: retirer padding, ajouter overflow et position
 const QuizCard = styled.div`
   background-color: white;
   width: 100%;
   max-width: 600px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  /* padding: 2rem; Supprimé */
+  overflow: hidden; /* Important pour contenir l'image arrondie et les animations */
+  position: relative; /* Aide à contenir les éléments animés */
+`;
+
+// <<< 3. Ajouter ContentWrapper pour le padding (utilisé pour Series, Quiz, Results)
+const ContentWrapper = styled.div`
   padding: 2rem;
 `;
 
@@ -53,21 +62,19 @@ const FooterContainer = styled.footer`
 
 
 function App() {
-  const [gameState, setGameState] = useState('start'); // 'start', 'selecting_series', 'playing', 'results'
+  const [gameState, setGameState] = useState('start');
   const [score, setScore] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState([]);
   const [selectedCategoryKey, setSelectedCategoryKey] = useState(null);
 
-  // Étape 1: L'utilisateur choisit une catégorie
+  // Fonctions de navigation (inchangées)
   const selectCategory = (categoryKey) => {
     setSelectedCategoryKey(categoryKey);
     setGameState('selecting_series');
   };
   
-  // Étape 2: L'utilisateur choisit une série
   const startGame = (seriesIndex) => {
     const questionsForSeries = quizzes[selectedCategoryKey].series[seriesIndex];
-    
     setCurrentQuiz(questionsForSeries);
     setScore(0);
     setGameState('playing');
@@ -79,10 +86,7 @@ function App() {
     });
   };
   
-  // Étape 3: Le quiz est fini
   const showResults = () => setGameState('results');
-  
-  // Étape 4: Navigation (retour)
   const goToSeriesScreen = () => setGameState('selecting_series');
   const goToStart = () => setGameState('start');
 
@@ -90,11 +94,14 @@ function App() {
   const renderGame = () => {
     switch (gameState) {
       case 'start':
-        return <StartScreen selectCategory={selectCategory} />; 
+        // <<< 4. Ajouter la key unique
+        return <StartScreen key="start" selectCategory={selectCategory} />; 
       
       case 'selecting_series':
         return (
+          // <<< 4. Ajouter la key unique
           <SeriesScreen 
+            key="series" 
             category={quizzes[selectedCategoryKey]}
             startGame={startGame}
             goToStart={goToStart}
@@ -103,25 +110,30 @@ function App() {
         
       case 'playing':
         return (
+          // <<< 4. Ajouter la key unique
           <Quiz 
+            key="quiz" 
             questions={currentQuiz} 
             setScore={setScore} 
             showResults={showResults} 
-            goToSeriesScreen={goToSeriesScreen} // Pour le bouton "Quitter"
+            goToSeriesScreen={goToSeriesScreen} 
           />
         );
         
       case 'results':
         return (
+          // <<< 4. Ajouter la key unique
           <ResultsScreen 
+            key="results" 
             score={score} 
             total={currentQuiz.length} 
-            restartGame={goToSeriesScreen} // "Rejouer" ramène à l'écran des séries
+            restartGame={goToSeriesScreen} 
           />
         );
         
       default:
-        return <StartScreen selectCategory={selectCategory} />;
+         // <<< 4. Ajouter la key unique
+        return <StartScreen key="start_default" selectCategory={selectCategory} />;
     }
   }
 
@@ -129,7 +141,17 @@ function App() {
     <AppContainer>
       <LogoImage src={logoGainde} alt="Logo Gainde IT" />
       <QuizCard>
-        {renderGame()}
+          {/* <<< 5. Envelopper dans AnimatePresence */}
+          <AnimatePresence mode="wait">
+            {/* Logique conditionnelle pour le padding (StartScreen le gère lui-même) */}
+             {gameState === 'start' ? (
+               renderGame() 
+             ) : (
+              <ContentWrapper key={gameState}> {/* Ajout d'une key ici aussi */}
+                {renderGame()} 
+              </ContentWrapper>
+             )}
+          </AnimatePresence>
       </QuizCard>
       <FooterContainer>
         <p>

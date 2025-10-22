@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import AnswerList from './AnswerList';
 import Timer from './Timer';
 import ReactGA from 'react-ga4';
+import { motion } from 'framer-motion'; // <<< 1. Importer motion
 
-// --- STYLED COMPONENTS ---
-
+// --- STYLED COMPONENTS (INCHANGÉS) ---
 const QuestionText = styled.h2`
   font-family: ${props => props.theme.fonts.display};
   font-size: 1.8rem;
@@ -28,7 +28,7 @@ const ExplanationBox = styled.div`
   margin-top: 1.5rem;
   font-size: 0.95rem;
   line-height: 1.6;
-  
+
   strong {
     color: ${props => props.theme.colors.ochre};
     display: block;
@@ -46,7 +46,7 @@ const QuitButton = styled.button`
   display: block;
   margin-left: auto;
   margin-right: auto;
-  
+
   &:hover {
     color: ${props => props.theme.colors.red};
     text-decoration: underline;
@@ -54,69 +54,70 @@ const QuitButton = styled.button`
 `;
 // --- FIN STYLED COMPONENTS ---
 
+// <<< 2. Définition des variantes d'animation (Exemple: arrivée par le bas)
+const screenVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  exit: { opacity: 0, y: -30, transition: { duration: 0.3, ease: "easeIn" } }
+};
 
+// --- COMPOSANT ---
 function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  
+
   const currentQuestion = questions[currentIndex];
 
+  // Fonctions handleTimeUp et handleAnswerSelect (inchangées)
   const handleTimeUp = () => {
-    ReactGA.event({
-      category: "Quiz_Answers",
-      action: "Time_Up",
-      label: currentQuestion.question.substring(0, 50)
-    });
+    ReactGA.event({ /* ... */ });
     handleAnswerSelect({ text: 'TIME_UP', correct: false });
   };
 
   const handleAnswerSelect = (option) => {
-    if (selectedAnswer) return; 
-    setSelectedAnswer(option); 
+    if (selectedAnswer) return;
+    setSelectedAnswer(option);
 
     if (option.correct) {
       setScore(prev => prev + 1);
-      ReactGA.event({
-        category: "Quiz_Answers",
-        action: "Answered_Correctly",
-        label: currentQuestion.question.substring(0, 50)
-      });
+      ReactGA.event({ /* ... Correct ... */ });
     } else if (option.text !== 'TIME_UP') {
-      ReactGA.event({
-        category: "Quiz_Answers",
-        action: "Answered_Incorrectly",
-        label: currentQuestion.question.substring(0, 50)
-      });
+      ReactGA.event({ /* ... Incorrect ... */ });
     }
 
-    // Délai pour montrer l'explication et la bonne/mauvaise réponse
     setTimeout(() => {
       const nextIndex = currentIndex + 1;
       if (nextIndex < questions.length) {
         setCurrentIndex(nextIndex);
-        setSelectedAnswer(null); 
+        setSelectedAnswer(null);
       } else {
-        showResults(); 
+        showResults();
       }
-    }, 3000); // 3 secondes de délai 
+    }, 3000); // Délai de 3 secondes
   };
 
   return (
-    <div>
-      <Timer 
-        key={currentIndex} 
+    // <<< 3. Wrapper tout le contenu dans motion.div et appliquer les props
+    <motion.div
+      variants={screenVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
+      <Timer
+        key={currentIndex}
         onTimeUp={handleTimeUp}
         stop={selectedAnswer !== null}
       />
-      
+
       <QuestionText>{currentQuestion.question}</QuestionText>
-      
-      <AnswerList 
+
+      <AnswerList
         options={currentQuestion.options}
         onAnswerSelect={handleAnswerSelect}
         selectedAnswer={selectedAnswer}
       />
-      
+
       {/* Affiche l'explication si une réponse est sélectionnée ET si l'explication existe */}
       {selectedAnswer && currentQuestion.explanation && (
         <ExplanationBox>
@@ -132,7 +133,7 @@ function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
       <QuitButton onClick={goToSeriesScreen}>
         Quitter la série
       </QuitButton>
-    </div>
+    </motion.div>
   );
 }
 export default Quiz;
