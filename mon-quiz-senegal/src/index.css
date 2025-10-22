@@ -1,0 +1,21 @@
+/* src/index.css */
+
+/* Reset simple */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lato', sans-serif; /* Police par défaut 'sans' de notre thème */
+  background-color: #F4F1DE; /* Fond 'light' de notre thème */
+  color: #3D405B; /* Texte 'dark' de notre thème */
+  
+  /* Pour centrer le quiz */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
