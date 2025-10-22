@@ -2,20 +2,27 @@
 import React from 'react';
 import styled from 'styled-components';
 import { quizzes } from '../data/questions';
-import heroImage from '../assets/sengal.png'; // Vérifiez que ce fichier est dans src/assets/
+import heroImage from '../assets/rose.jpg'; // Vérifiez que ce fichier est dans src/assets/
 
 // --- STYLED COMPONENTS ---
 const StartContainer = styled.div`
   text-align: center;
 `;
 
+// Dans src/components/StartScreen.jsx
+
+
 const HeroImage = styled.img`
   width: 100%;
-  height: 180px;
+  height: 300px;
   object-fit: cover;
-  border-radius: 8px 8px 0 0;
-  margin: -2rem -2rem 0 -2rem;
+  
+  /* MODIFICATION ICI : Mettez 12px pour correspondre au QuizCard */
+  border-radius: 12px 12px 0 0; 
+  
+  margin: -2rem -2rem 0 -2rem; /* Correct car padding est 2rem */
   margin-bottom: 2rem;
+  margin-top: 0.5rem ;
 `;
 
 const Title = styled.h1`
@@ -95,7 +102,7 @@ function StartScreen({ selectCategory }) { // Prop modifiée
       
       <HeroImage src={heroImage} alt="Illustration Quiz Sénégal" />
 
-      <Title>Quiz: Teranga Vision</Title>
+      <Title>Quizz: Teranga Vision</Title>
       <Subtitle>Choisissez une catégorie pour tester vos connaissances !</Subtitle>
       
       <CategoryGrid>

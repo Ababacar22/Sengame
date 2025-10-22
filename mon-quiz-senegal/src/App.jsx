@@ -133,7 +133,7 @@ function App() {
       </QuizCard>
       <FooterContainer>
         <p>
-          &copy; {new Date().getFullYear()} <a href="https://gainde-it.com" target="_blank" rel="noopener noreferrer">Gainde IT</a>.
+          &copy; {new Date().getFullYear()} <a href="https://gainde-it.netlify.app" target="_blank" rel="noopener noreferrer">Gainde IT</a>.
           <br/>
           Un projet didactique 🚀 pour la promotion du savoir et de la culture sénégalaise et africaine.
         </p>
