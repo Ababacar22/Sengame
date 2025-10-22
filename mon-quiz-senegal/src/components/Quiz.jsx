@@ -1,12 +1,12 @@
 // src/components/Quiz.jsx
-import React, { useState, useEffect } from 'react'; // <<< Importer useEffect
+import React, { useState, useEffect, useCallback } from 'react'; // Importer useCallback
 import styled from 'styled-components';
 import AnswerList from './AnswerList';
 import Timer from './Timer';
 import ReactGA from 'react-ga4';
 import { motion } from 'framer-motion';
 
-// >>> Copier la fonction shuffleArray ici aussi
+// Copier la fonction shuffleArray ici
 function shuffleArray(array) {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
@@ -17,9 +17,8 @@ function shuffleArray(array) {
   }
   return array;
 }
-// <<< FIN COPIE
 
-// --- STYLED COMPONENTS (INCHANGÉS) ---
+// --- STYLED COMPONENTS ---
 const QuestionText = styled.h2`
   font-family: ${props => props.theme.fonts.display};
   font-size: 1.8rem;
@@ -77,40 +76,55 @@ const screenVariants = {
 function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  // >>> État pour les options mélangées
   const [shuffledOptions, setShuffledOptions] = useState([]);
 
-  // Vérifie si 'questions' existe et a une entrée à 'currentIndex'
   const currentQuestion = questions && questions[currentIndex] ? questions[currentIndex] : null;
 
-  // >>> useEffect pour mélanger les options quand la question change
   useEffect(() => {
-    // S'assure que currentQuestion et ses options existent
     if (currentQuestion && currentQuestion.options) {
-      // Mélange une COPIE des options
       setShuffledOptions(shuffleArray([...currentQuestion.options]));
     } else {
-      setShuffledOptions([]); // Vide les options s'il n'y a pas de question valide
+      setShuffledOptions([]);
     }
-  }, [currentQuestion]); // Dépendance: se relance si currentQuestion change
-  // <<< FIN useEffect
+  }, [currentQuestion]);
 
-  // Fonctions handleTimeUp et handleAnswerSelect (inchangées pour la logique de score/GA)
-  const handleTimeUp = () => {
-     if (!currentQuestion) return; // Sécurité
-    ReactGA.event({ /* ... */ });
-    handleAnswerSelect({ text: 'TIME_UP', correct: false });
-  };
+  // <<< Fonction pour jouer un son >>>
+  const playSound = useCallback((soundFile) => {
+    try {
+      const audio = new Audio(`/sounds/${soundFile}`); // Chemin depuis public/
+      audio.play().catch(error => {
+        console.warn("Lecture audio bloquée par le navigateur:", error);
+      });
+    } catch (error) {
+      console.error("Erreur lors de la lecture du son:", error);
+    }
+  }, []); // Pas de dépendances externes
 
-  const handleAnswerSelect = (option) => {
-    if (selectedAnswer || !currentQuestion) return; // Sécurité
+  // <<< handleAnswerSelect (déplacé avant handleTimeUp pour la dépendance de useCallback) >>>
+  const handleAnswerSelect = useCallback((option) => {
+    if (selectedAnswer || !currentQuestion) return;
+
+    playSound('click.mp3'); // Joue le son de clic
+
     setSelectedAnswer(option);
 
     if (option.correct) {
       setScore(prev => prev + 1);
-      ReactGA.event({ /* ... Correct ... */ });
-    } else if (option.text !== 'TIME_UP') {
-      ReactGA.event({ /* ... Incorrect ... */ });
+      setTimeout(() => playSound('correct.mp3'), 200); // Joue son correct après délai
+      ReactGA.event({
+        category: "Quiz_Answers",
+        action: "Answered_Correctly",
+        label: currentQuestion.question.substring(0, 50)
+      });
+    } else {
+      setTimeout(() => playSound('wrong.mp3'), 200); // Joue son incorrect après délai
+      if (option.text !== 'TIME_UP') {
+         ReactGA.event({
+            category: "Quiz_Answers",
+            action: "Answered_Incorrectly",
+            label: currentQuestion.question.substring(0, 50)
+         });
+      }
     }
 
     setTimeout(() => {
@@ -121,17 +135,29 @@ function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
       } else {
         showResults();
       }
-    }, 3000); // Délai de 3 secondes
-  };
+    }, 3000); // Délai avant question suivante
+  }, [selectedAnswer, currentQuestion, setScore, playSound, showResults, currentIndex, questions.length]); // Dépendances
 
-  // Sécurité: Affiche un message si pas de question (ne devrait pas arriver normalement)
+
+  // <<< handleTimeUp >>>
+  const handleTimeUp = useCallback(() => {
+     if (!currentQuestion) return;
+    playSound('wrong.mp3'); // Joue le son "mauvais"
+    ReactGA.event({
+        category: "Quiz_Answers",
+        action: "Time_Up",
+        label: currentQuestion.question.substring(0, 50)
+      });
+    // Appelle handleAnswerSelect pour gérer la suite comme une mauvaise réponse
+    handleAnswerSelect({ text: 'TIME_UP', correct: false });
+  }, [currentQuestion, playSound, handleAnswerSelect]); // handleAnswerSelect est une dépendance
+
   if (!currentQuestion) {
     return <motion.div>Chargement de la question...</motion.div>;
   }
 
   return (
     <motion.div
-      // Utilise l'index comme key pour forcer l'animation à chaque question
       key={currentIndex}
       variants={screenVariants}
       initial="hidden"
@@ -139,20 +165,18 @@ function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
       exit="exit"
     >
       <Timer
-        key={`timer-${currentIndex}`} // Key unique pour le timer aussi
-        onTimeUp={handleTimeUp}
+        key={`timer-${currentIndex}`}
+        onTimeUp={handleTimeUp} // Passe la version useCallback
         stop={selectedAnswer !== null}
       />
 
       <QuestionText>{currentQuestion.question}</QuestionText>
 
-      {/* >>> Passer les options mélangées */}
       <AnswerList
         options={shuffledOptions}
-        onAnswerSelect={handleAnswerSelect}
+        onAnswerSelect={handleAnswerSelect} // Passe la version useCallback
         selectedAnswer={selectedAnswer}
       />
-      {/* <<< FIN MODIFICATION */}
 
       {selectedAnswer && currentQuestion.explanation && (
         <ExplanationBox>
