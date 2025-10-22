@@ -5,23 +5,11 @@ import StartScreen from './components/StartScreen';
 import SeriesScreen from './components/SeriesScreen';
 import Quiz from './components/Quiz';
 import ResultsScreen from './components/ResultsScreen';
+import ReviewScreen from './components/ReviewScreen'; // <<< Importer le nouvel écran
 import { quizzes } from './data/questions';
 import ReactGA from 'react-ga4';
 import logoGainde from './assets/logo_bleu.png'; // Vérifiez le chemin
 import { AnimatePresence } from 'framer-motion';
-
-// >>> Fonction pour mélanger un tableau (Fisher-Yates)
-function shuffleArray(array) {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-  return array;
-}
-// <<< FIN FONCTION SHUFFLE
 
 // --- STYLED COMPONENTS (INCHANGÉS) ---
 const AppContainer = styled.div`
@@ -72,43 +60,44 @@ const FooterContainer = styled.footer`
 
 
 function App() {
-  const [gameState, setGameState] = useState('start');
+  // <<< Ajouter le nouvel état 'reviewing'
+  const [gameState, setGameState] = useState('start'); // 'start', 'selecting_series', 'playing', 'results', 'reviewing'
   const [score, setScore] = useState(0);
   const [currentQuiz, setCurrentQuiz] = useState([]);
   const [selectedCategoryKey, setSelectedCategoryKey] = useState(null);
   const [selectedSeriesIndex, setSelectedSeriesIndex] = useState(null);
+  // <<< Nouvel état pour stocker les données de revue
+  const [reviewData, setReviewData] = useState([]);
 
-  // Étape 1: L'utilisateur choisit une catégorie
+  // Fonctions de navigation (inchangées pour selectCategory, startGame)
   const selectCategory = (categoryKey) => {
     setSelectedCategoryKey(categoryKey);
     setGameState('selecting_series');
   };
 
-  // Étape 2: L'utilisateur choisit une série
   const startGame = (seriesIndex) => {
     setSelectedSeriesIndex(seriesIndex);
-
-    // Récupère les questions originales de la série
     const originalQuestionsForSeries = quizzes[selectedCategoryKey].series[seriesIndex];
-
-    // >>> Mélange une COPIE du tableau avant de le stocker
-    const shuffledQuestions = shuffleArray([...originalQuestionsForSeries]);
-
-    setCurrentQuiz(shuffledQuestions); // Utilise les questions mélangées
+    const shuffledQuestions = shuffleArray([...originalQuestionsForSeries]); // Shuffle
+    setCurrentQuiz(shuffledQuestions);
     setScore(0);
     setGameState('playing');
-
-    ReactGA.event({
-      category: "Quiz",
-      action: "Start_Quiz",
-      label: `${quizzes[selectedCategoryKey].title} - Série ${seriesIndex + 1}`
-    });
+    ReactGA.event({ /* ... */ });
   };
 
-  // Étape 3: Le quiz est fini
-  const showResults = () => setGameState('results');
+  // <<< showResults reçoit et stocke les réponses
+  const showResults = (userAnswers = []) => {
+    setReviewData(userAnswers); // Stocke les réponses
+    setGameState('results');
+  };
 
-  // Étape 4: Navigation (retour)
+  // <<< Nouvelle fonction pour aller à la revue
+  const showReview = () => {
+    setGameState('reviewing');
+  };
+  // <<< FIN NOUVEAU
+
+  // Autres fonctions de navigation
   const goToSeriesScreen = () => setGameState('selecting_series');
   const goToStart = () => setGameState('start');
 
@@ -133,9 +122,9 @@ function App() {
         return (
           <Quiz
             key="quiz"
-            questions={currentQuiz} // Passe le tableau déjà mélangé
+            questions={currentQuiz}
             setScore={setScore}
-            showResults={showResults}
+            showResults={showResults} // Passe la fonction modifiée
             goToSeriesScreen={goToSeriesScreen}
           />
         );
@@ -149,8 +138,24 @@ function App() {
             restartGame={goToSeriesScreen}
             categoryKey={selectedCategoryKey}
             seriesIndex={selectedSeriesIndex}
+            // >>> Passer les props pour la revue
+            showReview={showReview}
+            reviewData={reviewData}
           />
         );
+
+      // >>> Nouveau cas pour l'écran de revue
+      case 'reviewing':
+        return (
+          <ReviewScreen
+            key="review"
+            reviewData={reviewData}
+            // Utilise showResults pour revenir (il réinitialise reviewData si besoin)
+            // ou créez une fonction goToResults qui fait juste setGameState('results')
+            goToResults={() => setGameState('results')}
+          />
+        );
+      // <<< FIN NOUVEAU CAS
 
       default:
         return <StartScreen key="start_default" selectCategory={selectCategory} />;
@@ -183,3 +188,15 @@ function App() {
 }
 
 export default App;
+
+// N'oubliez pas la fonction shuffleArray quelque part dans ce fichier si elle n'est pas importée
+function shuffleArray(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}

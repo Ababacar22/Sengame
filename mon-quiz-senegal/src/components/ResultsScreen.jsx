@@ -40,6 +40,25 @@ const ScoreText = styled.p`
   }
 `;
 
+// <<< AJOUT : Style pour le bouton "Voir mes erreurs"
+const ReviewButton = styled.button`
+  background: none;
+  border: none;
+  color: ${props => props.theme.colors.gray};
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem; /* Espace avant le bouton principal */
+  cursor: pointer;
+  display: block; /* Nécessaire pour centrer avec margin auto */
+  margin-left: auto;
+  margin-right: auto;
+
+  &:hover {
+    color: ${props => props.theme.colors.ochre};
+    text-decoration: underline;
+  }
+`;
+
+
 const RestartButton = styled.button`
   width: 100%;
   background-color: ${props => props.theme.colors.green};
@@ -59,11 +78,11 @@ const RestartButton = styled.button`
 `;
 // --- FIN STYLED COMPONENTS ---
 
-// Fonction getFeedbackMessage
+// Fonction getFeedbackMessage (inchangée)
 const getFeedbackMessage = (score, total) => {
   if (total === 0) return { message: "Quiz terminé !", level: 'medium' };
   const percentage = (score / total) * 100;
-  if (percentage === 100) { // Ajout pour score parfait
+   if (percentage === 100) {
      return { message: "Parfait ! 💯 Vous êtes incollable !", level: 'good' };
   } else if (percentage >= 80) {
     return { message: "Excellent ! ✨ Félicitations, vous maîtrisez le sujet !", level: 'good' };
@@ -81,36 +100,33 @@ const screenVariants = {
 };
 
 // --- COMPOSANT ---
-// <<< Accepter categoryKey et seriesIndex
-function ResultsScreen({ score, total, restartGame, categoryKey, seriesIndex }) {
+// <<< MODIFIÉ : Accepter showReview et reviewData
+function ResultsScreen({ score, total, restartGame, categoryKey, seriesIndex, showReview, reviewData }) {
 
   useEffect(() => {
-    // Google Analytics
+    // GA & High Score (inchangé)
     ReactGA.event({
-        category: "Quiz",
-        action: "Finish_Quiz",
-        label: `${categoryKey} - Série ${seriesIndex + 1} - Score: ${score}/${total}`, // Label plus précis
-        value: score
-      });
-
-    // >>> Logique de sauvegarde du meilleur score
-    if (categoryKey !== null && seriesIndex !== null && typeof categoryKey === 'string') { // Vérification type
-      const scoreKey = `highScore-${categoryKey}-${seriesIndex}`;
-      try {
-        const storedHighScore = localStorage.getItem(scoreKey);
-        if (storedHighScore === null || score > parseInt(storedHighScore, 10)) {
-          localStorage.setItem(scoreKey, score.toString());
-          console.log(`Nouveau meilleur score pour ${scoreKey}: ${score}`);
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'accès au localStorage:", error);
-      }
-    } else {
-       console.warn("categoryKey ou seriesIndex manquant ou invalide pour sauvegarde score", {categoryKey, seriesIndex});
+      category: "Quiz",
+      action: "Finish_Quiz",
+      label: `${categoryKey} - Série ${seriesIndex + 1} - Score: ${score}/${total}`,
+      value: score
+    });
+    if (categoryKey !== null && seriesIndex !== null && typeof categoryKey === 'string') {
+        const scoreKey = `highScore-${categoryKey}-${seriesIndex}`;
+        try {
+            const storedHighScore = localStorage.getItem(scoreKey);
+            if (storedHighScore === null || score > parseInt(storedHighScore, 10)) {
+              localStorage.setItem(scoreKey, score.toString());
+              console.log(`Nouveau meilleur score pour ${scoreKey}: ${score}`);
+            }
+        } catch (error) { console.error("Erreur localStorage:", error); }
     }
-  }, [score, total, categoryKey, seriesIndex]); // <<< Dépendances correctes
+  }, [score, total, categoryKey, seriesIndex]);
 
   const feedback = getFeedbackMessage(score, total);
+
+  // >>> AJOUT : Vérifier s'il y a des erreurs
+  const hasErrors = reviewData && reviewData.some(answer => !answer.isCorrect);
 
   return (
     <ResultsContainer
@@ -127,6 +143,15 @@ function ResultsScreen({ score, total, restartGame, categoryKey, seriesIndex }) 
         Votre score est de :<br/>
         <span>{score} / {total}</span>
       </ScoreText>
+
+      {/* >>> AJOUT : Affichage conditionnel du bouton */}
+      {hasErrors && (
+        <ReviewButton onClick={showReview}>
+          🔍 Voir mes erreurs
+        </ReviewButton>
+      )}
+      {/* <<< FIN AJOUT */}
+
       <RestartButton onClick={restartGame}>
         Retour aux séries
       </RestartButton>
