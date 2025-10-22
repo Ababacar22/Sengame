@@ -98,7 +98,7 @@ function Quiz({ questions, setScore, showResults, goToSeriesScreen }) {
       } else {
         showResults(); 
       }
-    }, 2000); // 2 secondes de délai (ou ajustez)
+    }, 3000); // 3 secondes de délai 
   };
 
   return (
