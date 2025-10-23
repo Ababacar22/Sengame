@@ -1,16 +1,74 @@
-# React + Vite
+# Quizz Sénégal - Teranga Vision 🇸🇳
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Description
 
-Currently, two official plugins are available:
+**Teranga Vision** est une application web de quizz interactif conçue dans un **but didactique** pour tester et améliorer les connaissances sur la culture générale, l'histoire, la géographie et d'autres aspects du **Sénégal** et de l'**Afrique**. Le projet vise à promouvoir le savoir de manière ludique et engageante.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+L'application est développée avec des technologies web modernes et met l'accent sur une expérience utilisateur agréable et instructive.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Fonctionnalités Implémentées 
 
-## Expanding the ESLint configuration
+* **Quiz Multi-Catégories :** Questions organisées par thèmes (Géographie Sénégalaise, Culture & Gastronomie, Histoire & Personnalités, Cas & Culture Tiktok Senegal).
+* **Système de Séries :** Chaque catégorie est divisée en plusieurs séries de questions (5 questions par série actuellement) pour une progression plus gérable.
+* **Questions à Choix Multiples (QCM) :** Format classique et intuitif.
+* **Contre-la-Montre :** Chaque question dispose d'un temps limité (timer visuel) pour y répondre.
+* **Explications Détaillées :** Après chaque réponse (bonne ou mauvaise), une explication est fournie pour renforcer l'apprentissage. 💡
+* **Calcul du Score :** Suivi du score pour chaque série jouée.
+* **Feedback Visuel & Messages :** Indication immédiate de la bonne/mauvaise réponse et message personnalisé sur l'écran des résultats en fonction du score.
+* **Sauvegarde du Meilleur Score :** Le meilleur score obtenu pour chaque série est enregistré localement (`localStorage`) et affiché sur l'écran de sélection des séries. 🏆
+* **Randomisation :**
+    * L'ordre des questions est mélangé à chaque lancement d'une série.
+    * L'ordre des options de réponse est mélangé pour chaque question. 🎲
+* **Effets Sonores :** Des sons accompagnent les clics, les bonnes et mauvaises réponses pour une meilleure immersion. 🔊
+* **Revue des Erreurs :** Possibilité de revoir les questions manquées à la fin d'une série, avec la bonne réponse et l'explication. 🧐
+* **Partage du Score :** Un bouton sur l'écran des résultats permet de partager son score via l'API Web Share native du navigateur/mobile. 🔗
+* **Design Thématique :** Interface inspirée des couleurs et de l'ambiance sénégalaises/africaines.
+* **Animations :** Transitions fluides entre les différents écrans de l'application grâce à Framer Motion.
+* **Gestion du Consentement :** Une bannière demande le consentement de l'utilisateur pour les cookies (notamment pour l'analyse d'audience). 🍪
+* **Analyse d'Audience (Conditionnelle) :** Intégration de Google Analytics (GA4) pour suivre l'utilisation de l'application, activée uniquement après consentement.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Technologies Utilisées 
+
+* **Frontend :** React.js (via Vite.js)
+* **Styling :** Styled-Components (CSS-in-JS)
+* **Animation :** Framer Motion
+* **Analyse :** ReactGA4 (pour Google Analytics)
+* **Consentement :** React Cookie Consent, js-cookie
+* **Déploiement :** Netlify
+
+---
+
+## Installation (Pour Développement)
+
+1.  Clonez le dépôt :
+    ```bash
+    git clone https://github.com/Ababacar22/Sengame.git
+    ```
+2.  Naviguez dans le dossier :
+    ```bash
+    cd mon-quiz-senegal 
+    ```
+    
+3.  Installez les dépendances :
+    ```bash
+    npm install
+    ```
+4.  Lancez le serveur de développement :
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## Crédits 👨‍💻
+
+Ce jeu a été développé par **Khalifa Ababacar DIALLO** dans le but d'améliorer la culture générale tout en garantissant un divertissement.
+
+* **Contact pro :** <khalifa.a.diallo@outlook.fr>
+* **Portfolio/Site :** [Mon site](https://kdiallo.netlify.app) 
+
+---
